@@ -41,7 +41,7 @@ namespace Services.Score.Infrastructure.Logging
                     typeof(RouteStatusChanged),
                     new HandlerLogTemplate
                     {
-                        After = "Added score to user: {UserId} if run: {RunId} changed status to: Valid. Route status: {CurrentStatus}.",
+                        After = "Added score to user who added route: {RouteId}, because route has been accepted.",
                         OnError = new Dictionary<Type, string>
                         {
                             {

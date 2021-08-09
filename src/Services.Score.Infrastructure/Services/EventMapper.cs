@@ -1,7 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Convey.CQRS.Events;
-using Services.Score.Application.Events.External;
 using Services.Score.Application.Services;
 using Services.Score.Core;
 using Services.Score.Core.Events;
@@ -18,6 +18,8 @@ namespace Services.Score.Infrastructure.Services
             switch (@event)
             {
                 case ScoreAdded e: return new Application.Events.ScoreIncreased(e.UserId, e.AmountAdded, e.TotalScore, e.Message);
+                    
+                default: throw new NotImplementedException();
             }
 
             return null;

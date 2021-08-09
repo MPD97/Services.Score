@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Convey;
+using Convey.CQRS.Queries;
 using Convey.Logging;
 using Convey.Secrets.Vault;
 using Convey.Types;
@@ -34,7 +35,8 @@ namespace Services.Score.Api
                     .UseInfrastructure()
                     .UseDispatcherEndpoints(endpoints => endpoints
                         .Get("", ctx => ctx.Response.WriteAsync(ctx.RequestServices.GetService<AppOptions>().Name))
-                        .Get<GetUserScore, UserScoreDto>("score/{userId}")))
+                        .Get<SearchUserScoreOverall, PagedResult<UserScoreOverallDto>>("scores")
+                        .Get<GetUserScore, UserScoreDto>("scores/{userId}")))
                 .UseLogging()
                 .UseVault();
     }

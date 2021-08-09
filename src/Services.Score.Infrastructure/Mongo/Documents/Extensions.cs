@@ -28,5 +28,12 @@ namespace Services.Score.Infrastructure.Mongo.Documents
                     => new UserScoreDto.ScoreEventDto(se.Id, se.Message,se.CreatesAt,se.Amount,se.Type,se.RouteId,se.Date))
                
             };
+        
+        public static UserScoreOverallDto AsScoreOverallDto(this UserScoreDocument document)
+            => new UserScoreOverallDto
+            {
+                Id = document.Id,
+                Score = document.Score,
+            };
     }
 }

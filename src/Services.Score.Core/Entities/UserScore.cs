@@ -8,7 +8,7 @@ namespace Services.Score.Core.Entities
 {
     public class UserScore : AggregateRoot
     {
-        private const int MinimumAmount = 1;
+        private const int MinimumAmount = 0;
         private const int MaximumAmount = int.MaxValue;
         private ISet<ScoreEvent> _scoreEvents = new HashSet<ScoreEvent>();
         public int Score { get; private set; }
@@ -18,13 +18,13 @@ namespace Services.Score.Core.Entities
             private set => _scoreEvents = new HashSet<ScoreEvent>(value); 
         }
 
-        public UserScore(AggregateId id, int score, IEnumerable<ScoreEvent> scoreEvents)
+        public UserScore(Guid id, int score, IEnumerable<ScoreEvent> scoreEvents)
         {
             Id = id;
             Score = score is < MinimumAmount or > MaximumAmount ?
                 throw new InvalidScoreAmountException(score, MinimumAmount, MaximumAmount) 
                 : score;
-            ScoreEvents = scoreEvents;
+            ScoreEvents = scoreEvents ?? Enumerable.Empty<ScoreEvent>();
         }
 
         public bool IsIncreasable(ScoreEvent @event)

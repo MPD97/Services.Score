@@ -13,7 +13,7 @@ using Services.Score.Application.Services;
 
 namespace Services.Score.Infrastructure.Services
 {
- internal sealed class MessageBroker : IMessageBroker
+    internal sealed class MessageBroker : IMessageBroker
     {
         private const string DefaultSpanContextHeader = "span_context";
         private readonly IBusPublisher _busPublisher;
