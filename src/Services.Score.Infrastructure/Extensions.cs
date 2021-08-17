@@ -27,12 +27,15 @@ using Convey.WebApi.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Services.Score.Application;
 using Services.Score.Application.Events.External;
 using Services.Score.Application.Services;
 using Services.Score.Application.Services.Route;
+using Services.Score.Application.Services.Run;
 using Services.Score.Core.Repositories;
+using Services.Score.Infrastructure.BackgroundJobs;
 using Services.Score.Infrastructure.Contexts;
 using Services.Score.Infrastructure.Decorators;
 using Services.Score.Infrastructure.Exceptions;
@@ -41,6 +44,7 @@ using Services.Score.Infrastructure.Mongo.Documents;
 using Services.Score.Infrastructure.Mongo.Repositories;
 using Services.Score.Infrastructure.Services;
 using Services.Score.Infrastructure.Services.Route;
+using Services.Score.Infrastructure.Services.Run;
 
 namespace Services.Score.Infrastructure
 {
@@ -52,8 +56,11 @@ namespace Services.Score.Infrastructure
             builder.Services.AddTransient<IMessageBroker, MessageBroker>();
             builder.Services.AddTransient<IUserScoreRepository, UserScoreMongoRepository>();
             builder.Services.AddTransient<IRouteServiceClient, RouteServiceClient>();
+            builder.Services.AddTransient<IRunServiceClient, RunServiceClient>();
             builder.Services.AddSingleton<IDateTimeProvider, DateTimeProvider>();
+            builder.Services.AddSingleton<ITopScoreService, TopScoreService>();
             builder.Services.AddTransient<IAppContextFactory, AppContextFactory>();
+            builder.Services.AddHostedService<TopScoreJob>();
             builder.Services.AddTransient(ctx => ctx.GetRequiredService<IAppContextFactory>().Create());
             builder.Services.TryDecorate(typeof(ICommandHandler<>), typeof(OutboxCommandHandlerDecorator<>));
             builder.Services.TryDecorate(typeof(IEventHandler<>), typeof(OutboxEventHandlerDecorator<>));
@@ -77,7 +84,6 @@ namespace Services.Score.Infrastructure
                 .AddWebApiSwaggerDocs()
                 .AddSecurity();
         }
-
         public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
         {
             app.UseErrorHandler()
@@ -87,6 +93,7 @@ namespace Services.Score.Infrastructure
                 .UsePublicContracts<ContractAttribute>()
                 .UseMetrics()
                 .UseRabbitMq()
+                .SubscribeEvent<TextResourceCreated>()
                 .SubscribeEvent<UserCreated>()
                 .SubscribeEvent<RunCompleted>()
                 .SubscribeEvent<RouteStatusChanged>();

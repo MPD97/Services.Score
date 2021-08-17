@@ -54,11 +54,11 @@ namespace Services.Score.Core.Entities
             => new ScoreEvent(id, $"Route first place in {forDate.ToString("Y", CultureInfo)}", createdAt,
                 35, ScoreType.RouteFirst, routeId, forDate);
         
-        public static ScoreEvent ScoreRouteComment(Guid id, DateTime createdAt, Guid routeId)
+        public static ScoreEvent ScoreRouteCommented(Guid id, DateTime createdAt, Guid routeId)
             => new ScoreEvent(id, $"Route commented", createdAt,
                 2, ScoreType.RouteCommented, routeId, null);
         
-        public static ScoreEvent ScoreRouteCommentWithPhoto(Guid id, DateTime createdAt, Guid routeId)
+        public static ScoreEvent ScoreRouteCommentedWithPhoto(Guid id, DateTime createdAt, Guid routeId)
             => new ScoreEvent(id, $"Route commented with photo", createdAt,
                 5, ScoreType.RouteCommentedWithPhoto, routeId, null);
     }

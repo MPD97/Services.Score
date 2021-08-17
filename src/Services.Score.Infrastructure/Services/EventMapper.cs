@@ -15,14 +15,11 @@ namespace Services.Score.Infrastructure.Services
 
         public IEvent Map(IDomainEvent @event)
         {
-            switch (@event)
+            return @event switch
             {
-                case ScoreAdded e: return new Application.Events.ScoreIncreased(e.UserId, e.AmountAdded, e.TotalScore, e.Message);
-                    
-                default: throw new NotImplementedException();
-            }
-
-            return null;
+                ScoreAdded e => new Application.Events.ScoreIncreased(e.UserId, e.AmountAdded, e.TotalScore, e.Message),
+                _ => throw new NotImplementedException()
+            };
         }
     }
 }

@@ -23,6 +23,7 @@ namespace Services.Score.Api
             => await CreateWebHostBuilder(args)
                 .Build()
                 .RunAsync();
+
         public static IWebHostBuilder CreateWebHostBuilder(string[] args)
             => WebHost.CreateDefaultBuilder(args)
                 .ConfigureServices(services => services
@@ -36,6 +37,7 @@ namespace Services.Score.Api
                     .UseDispatcherEndpoints(endpoints => endpoints
                         .Get("", ctx => ctx.Response.WriteAsync(ctx.RequestServices.GetService<AppOptions>().Name))
                         .Get<SearchUserScoreOverall, PagedResult<UserScoreOverallDto>>("scores")
+                        .Get<GetUserRanking, UserRankingDto>("scores/ranking/{userId}")
                         .Get<GetUserScore, UserScoreDto>("scores/{userId}")))
                 .UseLogging()
                 .UseVault();
