@@ -39,7 +39,6 @@ namespace Services.Score.Api
                         .Get<SearchUserScoreOverall, PagedResult<UserScoreOverallDto>>("scores")
                         .Get<GetUserRanking, UserRankingDto>("scores/ranking/{userId}")
                         .Get<GetUserScore, UserScoreDto>("scores/{userId}")))
-                .UseLogging()
-                .UseVault();
+                .UseLogging();
     }
 }
