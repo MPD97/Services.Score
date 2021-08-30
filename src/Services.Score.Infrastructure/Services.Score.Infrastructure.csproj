@@ -32,5 +32,9 @@
     <ItemGroup>
       <ProjectReference Include="..\Services.Score.Application\Services.Score.Application.csproj" />
     </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Decorators" />
+    </ItemGroup>
     
 </Project>

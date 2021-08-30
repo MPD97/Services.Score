@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Convey;
-using Convey.CQRS.Commands;
-using Convey.CQRS.Events;
 using Convey.CQRS.Queries;
 using Convey.Discovery.Consul;
 using Convey.Docs.Swagger;
@@ -15,10 +13,8 @@ using Convey.MessageBrokers.CQRS;
 using Convey.MessageBrokers.Outbox;
 using Convey.MessageBrokers.Outbox.Mongo;
 using Convey.MessageBrokers.RabbitMQ;
-using Convey.Metrics.AppMetrics;
 using Convey.Persistence.MongoDB;
 using Convey.Persistence.Redis;
-using Convey.Security;
 using Convey.Tracing.Jaeger;
 using Convey.Tracing.Jaeger.RabbitMQ;
 using Convey.WebApi;
@@ -27,7 +23,6 @@ using Convey.WebApi.Swagger;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Win32.TaskScheduler;
 using Newtonsoft.Json;
 using Services.Score.Application;
 using Services.Score.Application.Events.External;
@@ -37,7 +32,6 @@ using Services.Score.Application.Services.Run;
 using Services.Score.Core.Repositories;
 using Services.Score.Infrastructure.BackgroundJobs;
 using Services.Score.Infrastructure.Contexts;
-using Services.Score.Infrastructure.Decorators;
 using Services.Score.Infrastructure.Exceptions;
 using Services.Score.Infrastructure.Logging;
 using Services.Score.Infrastructure.Mongo.Documents;
@@ -62,9 +56,7 @@ namespace Services.Score.Infrastructure
             builder.Services.AddTransient<IAppContextFactory, AppContextFactory>();
             builder.Services.AddHostedService<TopScoreJob>();
             builder.Services.AddTransient(ctx => ctx.GetRequiredService<IAppContextFactory>().Create());
-            builder.Services.TryDecorate(typeof(ICommandHandler<>), typeof(OutboxCommandHandlerDecorator<>));
-            builder.Services.TryDecorate(typeof(IEventHandler<>), typeof(OutboxEventHandlerDecorator<>));
-            
+
             return builder
                 .AddErrorHandler<ExceptionToResponseMapper>()
                 .AddQueryHandlers()
@@ -77,12 +69,10 @@ namespace Services.Score.Infrastructure
                 .AddExceptionToMessageMapper<ExceptionToMessageMapper>()
                 .AddMongo()
                 .AddRedis()
-                .AddMetrics()
                 .AddJaeger()
                 .AddHandlersLogging()
                 .AddMongoRepository<UserScoreDocument, Guid>("userScores")
-                .AddWebApiSwaggerDocs()
-                .AddSecurity();
+                .AddWebApiSwaggerDocs();
         }
         public static IApplicationBuilder UseInfrastructure(this IApplicationBuilder app)
         {
@@ -91,7 +81,6 @@ namespace Services.Score.Infrastructure
                 .UseJaeger()
                 .UseConvey()
                 .UsePublicContracts<ContractAttribute>()
-                .UseMetrics()
                 .UseRabbitMq()
                 .SubscribeEvent<TextResourceCreated>()
                 .SubscribeEvent<UserCreated>()
